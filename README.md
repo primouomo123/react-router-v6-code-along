@@ -468,67 +468,7 @@ function UserProfile() {
 export default UserProfile
 ```
 
-We can then add this new component to our router:
-
-```jsx
-// App.jsx
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import Home from './pages/Home'
-import About from './pages/About'
-import Login from './pages/Login'
-import UserProfile from './pages/UserProfile'
-
-const App = () => {
-    return (
-        <BrowserRouter>
-            <Routes>
-                <Route path='/' element={<Home />} />
-                <Route path='/about' element={<About />} />
-                <Route path='/login' element={<Login />} />
-                <Route path='/profile' element={<UserProfile />} />
-            </Routes>
-        </BrowserRouter>
-    )
-}
-
-export default App
-```
-
-Ideally, we want to navigate people to this page when they click on one of our
-user cards displaying on our homepage.
-
-Let's update our `UserCard` component to use a `Link` from `react-router-dom`:
-
-```jsx
-// UserCard.jsx
-import { Link } from "react-router-dom"
-
-function UserCard({user}) {
-  return (
-    <article>
-        <h2>{user.name}</h2>
-        <Link to="/profile">View profile</Link>
-    </article>
-  )
-}
-
-export default UserCard
-```
-
-Let's test it out! Click on one of those links — you should be navigated to our
-`UserProfile` page.
-
-Hang on — we're navigating successfully, but we're not showing any information
-about a particular user. That won't work!
-
-We still want to use our `UserProfile` page to display information about a user.
-But we want the _user information_ we're displaying to change.
-
-This is where **Dynamic Routes** and **URL Parameters** come in — we can
-actually use URL routes to pass data!
-
-Let's go back and update our routes to start using dynamic routing and URL
-parameters:
+We can then add this new component to our router using a dynamic route:
 
 ```jsx
 // App.jsx
@@ -554,6 +494,8 @@ const App = () => {
 export default App
 ```
 
+We'll use **Dynamic Routes** and **URL Parameters** to pass data about individual users.
+
 Notice that we added `/:id` to the end of our `path` for our `UserProfile`
 route. This notation creates a `URL parameter` — a segment of our URL that can
 change and that contains data we can use in our components.
@@ -564,7 +506,7 @@ example, the `/profile/1`, `/profile/2`, and `/profile/3` URLs will all lead to
 the same page. That page will just display different information depending on
 which URL is used!
 
-Let's update our `UserCard` component to start making use of our dynamic route:
+Let's update our `UserCard` component to start linking to our new dynamic route:
 
 ```jsx
 // UserCard.js
