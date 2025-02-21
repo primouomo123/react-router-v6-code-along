@@ -51,21 +51,34 @@ server` to start your `json-server` and `npm run dev` to open the application in
 your browser.
 
 If you open up `src/main.jsx`, you will see that we are currently rendering our
-`Home` component, which will serve as the homepage of our application. `Home` is
+`App` component. The `App` component's only job at the moment is to render `Home`, 
+which will serve as the homepage of our application. `Home` is
 rendering a list of user cards displaying existing site users.
 
 ```jsx
 // main.jsx
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import Home from "./pages/Home"
-import "./index.css"
+import App from "./App"
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <Home />
+    <App />
   </StrictMode>,
 )
+```
+
+```jsx
+// in App.jsx
+import Home from './pages/Home'
+
+const App = () => {
+    return (
+        <Home />
+    )
+}
+
+export default App
 ```
 
 ```jsx
@@ -100,7 +113,7 @@ function Home() {
   )
 }
 
-export default Home;
+export default Home
 ```
 
 To start using React Router, we need to install `react-router-dom`:
@@ -113,78 +126,94 @@ $ npm install react-router-dom@6
 > walkthrough is designed for version 6 — other versions may have different
 > syntax.
 
-To start implementing routes, we first need to import `createBrowserRouter` and
-`RouterProvider` from `react-router-dom`:
+To start implementing routes, we first need to import `BrowserRouter`, `Routes`, and `Route`
+ from `react-router-dom` in `App.jsx`:
 
 ```jsx
-// main.jsx
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-// Step 1. Import react-router functions
-import Home from "./pages/Home";
-import "./index.css";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Home from './pages/Home'
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <Home />
-  </StrictMode>,
-)
+const App = () => {
+    return (
+        <Home />
+    )
+}
+
+export default App
 ```
 
-`createBrowserRouter` is used to create the router for our application. We'll
-pass it an array of route objects as its argument. Each route object will have a
-routing path and a corresponding element to be rendered on that path.
+`BrowserRouter` is used to create the router for our application. We'll give it
+a Routes component as a child which will have individual Route components as children. 
+Each route component will have a path and an element prop. The path should have the 
+desired route as a value, and the element will have the jsx to render when at the route.
 
 ```jsx
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Home />
-  }
-])
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Home from './pages/Home'
+
+const App = () => {
+    return (
+      <BrowserRouter>
+        <Routes>
+          <Route path='/' element={<Home />} />
+        </Routes>
+      </BrowserRouter>
+    )
+}
+
+export default App
 ```
 
-The `RouterProvider` provides the router created by `createBrowserRouter` to our
-application, so it can use React-Router's client-side routing.
-
-```jsx
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>,
-)
-```
-
-Let's try it! Copy the code below into `src/main.jsx` and run `npm run dev` again
+Let's try it! Copy the code above into `src/App.jsx` and run `npm run dev` again
 if you've closed down your application at any point (don't forget to run `npm
 run server` if you closed down your `json-server` too). Once it is running,
-point your URL to `http://localhost:3000/`. We should still see the home page,
+point your URL to `http://localhost:5173/`. We should still see the home page,
 but now it's being rendered using React Router!
 
+You can also test this by changing the route path. Try changing it to '/home':
+
 ```jsx
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Home from "./pages/Home";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Home from './pages/Home'
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Home />
-  }
-])
+const App = () => {
+    return (
+      <BrowserRouter>
+        <Routes>
+          <Route path='/home' element={<Home />} />
+        </Routes>
+      </BrowserRouter>
+    )
+}
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>,
-)
+export default App
+```
+
+Now refresh the page. The names should have disappeared. Now in the browser, 
+change the url to add /home on the end `http://localhost:5173/home`. The Home
+component should render again. Don't forget to change the root back after testing:
+
+```jsx
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Home from './pages/Home'
+
+const App = () => {
+    return (
+      <BrowserRouter>
+        <Routes>
+          <Route path='/' element={<Home />} />
+        </Routes>
+      </BrowserRouter>
+    )
+}
+
+export default App
 ```
 
 ### Adding Additional Routes
 
 In the last two steps, we learned how to set up our router using
-`createBrowserRouter` and `RouterProvider` and add our very first route.
+`BrowserRouter`, `Routes`, and `Route`.
 
 Next, we want to set up routing for `About` and `Login` pages.
 
@@ -208,6 +237,15 @@ function About() {
 export default About
 ```
 
+Important Note: For the `Login` component, we'll only provide a username. We 
+wouldn't want to store any passwords at the moment since we currently are using 
+a secure database or any password encryption or hashing libraries. It's very 
+important when creating applications that we never store plain text passwords 
+or expose our database with our passwords. Currently our database is all in 
+a db.json file that is pushed to GitHub, so anyone can access our data. 
+No personal or confidential information should be stored when using json-server 
+for a backend.
+
 ```jsx
 // Login.jsx
 function Login() {
@@ -220,13 +258,8 @@ function Login() {
         <h1>Login</h1>
         <form>
           <div>
-            <label for="username">Username: </label>
+            <label htmlFor="username">Username: </label>
             <input id="username" type="text" name="username" placeholder="Username" />
-          </div>
-          <br/>
-          <div>
-            <label for="password">Password: </label>
-            <input id="password" type="password" name="password" placeholder="Password" />
           </div>
           <br/>
           <button type="submit">Submit</button>
@@ -239,38 +272,29 @@ function Login() {
 export default Login
 ```
 
-Next, we'll import our new pages into our `main.jsx` file, and add them as
-routes within `createBrowserRouter`:
+Next, we'll import our new pages into our `App.jsx` file, and add them as
+routes within `Routes`:
 
 ```jsx
-// ./src/main.js
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import Home from "./pages/Home"
+// ./src/App.jsx
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Home from './pages/Home'
 import About from "./pages/About"
 import Login from "./pages/Login"
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Home />
-  }, 
-  {
-    path: "/about",
-    element: <About />
-  },
-  {
-    path: "/login",
-    element: <Login />
-  }
-])
+const App = () => {
+    return (
+      <BrowserRouter>
+        <Routes>
+          <Route path='/' element={<Home />} />
+          <Route path='/about' element={<About />} />
+          <Route path='/login' element={<Login />} />
+        </Routes>
+      </BrowserRouter>
+    )
+}
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>,
-)
+export default App
 ```
 
 If you go back to the browser you will see that it looks the same — our `Home`
@@ -447,30 +471,27 @@ export default UserProfile
 We can then add this new component to our router:
 
 ```jsx
-// main.jsx
-// ...other import statements
-import UserProfile from "./pages/UserProfile"
+// App.jsx
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Home from './pages/Home'
+import About from './pages/About'
+import Login from './pages/Login'
+import UserProfile from './pages/UserProfile'
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Home />
-  }, 
-  {
-    path: "/about",
-    element: <About />
-  },
-  {
-    path: "/login",
-    element: <Login />
-  },
-  {
-    path: "/profile",
-    element: <UserProfile />
-  }
-])
+const App = () => {
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path='/' element={<Home />} />
+                <Route path='/about' element={<About />} />
+                <Route path='/login' element={<Login />} />
+                <Route path='/profile' element={<UserProfile />} />
+            </Routes>
+        </BrowserRouter>
+    )
+}
 
-// ...render statements
+export default App
 ```
 
 Ideally, we want to navigate people to this page when they click on one of our
@@ -510,29 +531,27 @@ Let's go back and update our routes to start using dynamic routing and URL
 parameters:
 
 ```jsx
-// main.jsx
-// ...import statements
+// App.jsx
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Home from './pages/Home'
+import About from './pages/About'
+import Login from './pages/Login'
+import UserProfile from './pages/UserProfile'
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Home />
-  }, 
-  {
-    path: "/about",
-    element: <About />
-  },
-  {
-    path: "/login",
-    element: <Login />
-  },
-  {
-    path: "/profile/:id",
-    element: <UserProfile />
-  }
-])
+const App = () => {
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path='/' element={<Home />} />
+                <Route path='/about' element={<About />} />
+                <Route path='/login' element={<Login />} />
+                <Route path='/profile/:id' element={<UserProfile />} />
+            </Routes>
+        </BrowserRouter>
+    )
+}
 
-// ...render statements
+export default App
 ```
 
 Notice that we added `/:id` to the end of our `path` for our `UserProfile`
@@ -623,9 +642,12 @@ const userId = params.id
 
 useEffect(() =>{
   fetch(`http://localhost:4000/users/${userId}`)
-  .then(r => r.json())
-  .then(data => setUser(data))
-  .catch(error => console.error(error))
+    .then((r => {
+      if (!r.ok) { throw new Error("failed to fetch user") }
+      return r.json()
+    }))
+    .then(data => setUser(data))
+    .catch(error => console.error(error))
 }, [userId])
 
 ```
@@ -633,16 +655,32 @@ useEffect(() =>{
 We can now update the JSX to display our specific users name:
 
 ```jsx
-<h1>{user.name}</h1>
+return(
+    <>
+        <header>
+            <NavBar />
+        </header>
+        <main>
+            <h1>{user.name}</h1>
+        </main>
+    </>
+)
 ```
 
 We'll also want to add some conditional rendering to make sure our app doesn't
 error out while it's waiting for our user to be fetched:
 
 ```jsx
-if(!user.name){
-  return <h1>Loading...</h1>;
-};
+return(
+    <>
+        <header>
+            <NavBar />
+        </header>
+        <main>
+            { user.name ?   <h1>{user.name}</h1> : <h1>Loading...</h1> } 
+        </main>
+    </>
+)
 ```
 
 Here's what our full UserProfile component looks like now:
@@ -665,17 +703,13 @@ function UserProfile() {
     .catch(error => console.error(error))
   }, [userId])
 
-  if(!user.name){
-    return <h1>Loading...</h1>
-  }
-
   return(
     <>
       <header>
         <NavBar />
       </header>
       <main>
-        <h1>{user.name}</h1>
+        { user.name ?   <h1>{user.name}</h1> : <h1>Loading...</h1> } 
       </main>
     </>
   )
@@ -691,22 +725,18 @@ we navigate to a specific user's profile page! Nice!
 
 Ok great, we've got most of the basic functionality for client-side routing
 down! But what if somebody enters a route that doesn't exist? Try entering
-`http://localhost:3000/florp` into your browser. Yikes! That's an ugly looking
+`http://localhost:5173/florp` into your browser. Yikes! That's an ugly looking
 error page!
 
-Let's create one more page in our application: ErrorPage.js.
+Let's create one more page in our application: `ErrorPage.jsx`.
 
 Create this new component within our `pages` folder, then add the following
 code:
 
 ```jsx
 import NavBar from "../components/NavBar"
-import { useRouteError } from "react-router-dom"
 
 function ErrorPage() {
-  const error = useRouteError();
-  console.error(error)
-
   return (
     <>
       <header>
@@ -722,131 +752,72 @@ function ErrorPage() {
 export default ErrorPage
 ```
 
-Note that we're importing the `useRouteError` hook in addition to our `NavBar`
-component. The `useRouteError` hook allows us to interact with the error itself,
-including the error status and its message. You can read more about it in the
-[`useRouteError`
-documentation](https://reactrouter.com/en/main/hooks/use-route-error).
-
-Now that we have that, we can add this `ErrorPage` to each of our routes using
-the `errorElement` field within our route objects:
+Now that we have our user-friendly error page, we can create a `Route` for this component. 
+The route path will be equal to '*' so that it catches any route that doesn't match the 
+previous routes above it. This is much like a case statement in JavaScript. Router will 
+try to match the path one by one in the order that we've declared the each `Route`, so it's 
+important that when we define our catch-all route, we put that route at the very bottom 
+of the `Routes` children.
 
 ```jsx
-// main.jsx
-// ... other import statements
-import ErrorPage from "./pages/ErrorPage"
+// App.jsx
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Home />,
-    errorElement: <ErrorPage />
-  }, 
-  {
-    path: "/about",
-    element: <About />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: "/login",
-    element: <Login />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: "/profile/:id",
-    element: <UserProfile />,
-    errorElement: <ErrorPage />
-  }
-])
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Home from './pages/Home'
+import About from './pages/About'
+import Login from './pages/Login'
+import UserProfile from './pages/UserProfile'
+import ErrorPage from './pages/ErrorPage'
 
-// ...render statements
+const App = () => {
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path='/' element={<Home />} />
+                <Route path='/about' element={<About />} />
+                <Route path='/login' element={<Login />} />
+                <Route path='/profile/:id' element={<UserProfile />} />
+                <Route path='*' element={<ErrorPage />} />
+            </Routes>
+        </BrowserRouter>
+    )
+}
 
+export default App
 ```
 
-The `errorElement` can handle more than just bad URLs — it will redirect your
-app toward the provided Error component should any error occur within your main
-UI component! For that reason, we'll want to make sure each of our routes has an
-appropriate `errorElement`.
-
->**Note**: Applications that are created using `create-react-app` have a
->built-in React Error Overlay used in development mode. If your page generates
->an error during development, you will still see the React Error Overlay over
->your browser page, even with the errorElement included. You can see the
->errorElement by closing the Error Overlay.
-
-### Separation of Concerns
-
-By this point, everything should be functional. (If it's not, try carefully
-reviewing any errors you're receiving and double checking your code against the
-example code.) But, we could make an _organizational_ improvement.
-
-Take a look at our `main.jsx` file. It's getting pretty long and messy! Instead
-of including all of this routing logic within our `main.jsx` file, let's extract
-some of it out into a separate file, `routes.jsx`. This file has already been
-created for you, but you can create it yourself in future projects.
-
-Let's move our array of route objects into this `routes.jx` file, and save it in
-a variable called `routes`. We can then make our `routes` variable the default
-export for the file. Don't forget to import all of the necessary components as
-well!
+Try it out, and then try moving the error `Route` above to the top or middle of the 
+children of `Routes`.
 
 ```jsx
-// routes.jsx
-import Home from "./pages/Home"
-import About from "./pages/About"
-import Login from "./pages/Login"
-import UserProfile from "./pages/UserProfile"
-import ErrorPage from "./pages/ErrorPage"
+// App.jsx
 
-const routes = [
-  {
-    path: "/",
-    element: <Home />,
-    errorElement: <ErrorPage />
-  }, 
-  {
-    path: "/about",
-    element: <About />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: "/login",
-    element: <Login />,
-    errorElement: <ErrorPage />
-  },
-  {
-    path: "/profile/:id",
-    element: <UserProfile />,
-    errorElement: <ErrorPage />
-  }
-]
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Home from './pages/Home'
+import About from './pages/About'
+import Login from './pages/Login'
+import UserProfile from './pages/UserProfile'
+import ErrorPage from './pages/ErrorPage'
 
-export default routes
+const App = () => {
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path='*' element={<ErrorPage />} />
+                <Route path='/' element={<Home />} />
+                <Route path='/about' element={<About />} />
+                <Route path='/login' element={<Login />} />
+                <Route path='/profile/:id' element={<UserProfile />} />
+            </Routes>
+        </BrowserRouter>
+    )
+}
+
+export default App
 ```
 
-Now we just need to make sure we import our `routes` variable back into our
-`main.js` file and pass it into `createBrowserRouter`:
-
-```jsx
-// main.jsx
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import routes from "./routes.js"
-
-const router = createBrowserRouter(routes)
-
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>,
-)
-```
-
-There! Much cleaner! This will also make it easier to run tests on your routes,
-as your routing configuration has been separated from the rendering logic of
-your app. This is one of many reasons that separation of concerns is so widely
-used and so helpful.
+Now test your app. You should see that any route below the '*' route is no longer 
+accessible. Now be sure to move the error route back to the bottom.
 
 ## Conclusion
 
@@ -854,19 +825,9 @@ You've now seen all the core functionality of React Router required for
 client-side routing. We've met the requirements so that our app can:
 
 - Conditionally render a different component based on the URL (using
-  `createBrowserRouter` and `RouterProvider`).
+  `BrowserRouter`, `Routes`, and `Route`).
 - Change the URL using JavaScript, without making a GET request and reloading
   the HTML document (using the `<Link>` or `<NavLink>` components).
 
 In the coming lessons, we'll explore more of the advanced functionality provided
-by React Router. If you have the time, you should definitely look at the [React
-Router docs][react router docs] — especially the examples — to dive deeper into
-React Router's many features and get a better sense of how to use it in an
-application.
-
-## Resources
-
-- [React Router docs][react router docs]
-
-[react router docs]: https://reactrouter.com/en/main
-[soils]: https://en.wikipedia.org/wiki/Soil_type
+by React Router.
