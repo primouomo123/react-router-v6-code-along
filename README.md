@@ -47,27 +47,31 @@ into it!
 ### Setting up our Main Route
 
 To get started, clone down this repo and run `npm install`. Then run `npm run
-server` to start your `json-server` and `npm start` to open the application in
+server` to start your `json-server` and `npm run dev` to open the application in
 your browser.
 
-If you open up `src/index.js`, you will see that we are currently rendering our
+If you open up `src/main.jsx`, you will see that we are currently rendering our
 `Home` component, which will serve as the homepage of our application. `Home` is
 rendering a list of user cards displaying existing site users.
 
 ```jsx
-// index.js
-import React from "react";
-import ReactDOM from "react-dom/client";
-import Home from "./pages/Home";
+// main.jsx
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import Home from "./pages/Home"
+import "./index.css"
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<Home />);
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <Home />
+  </StrictMode>,
+)
 ```
 
 ```jsx
-// Home.js
+// Home.jsx
 import { useState, useEffect } from "react"
-import UserCard from "../components/UserCard";
+import UserCard from "../components/UserCard"
 
 function Home() {
   const [users, setUsers] = useState([])
@@ -81,7 +85,7 @@ function Home() {
   
   const userList = users.map(user =>{
     return <UserCard key={user.id} user={user}/>
-  });
+  })
 
   return (
     <>
@@ -93,8 +97,8 @@ function Home() {
         {userList}
       </main>
     </>
-  );
-};
+  )
+}
 
 export default Home;
 ```
@@ -113,15 +117,18 @@ To start implementing routes, we first need to import `createBrowserRouter` and
 `RouterProvider` from `react-router-dom`:
 
 ```jsx
-// index.js
-import React from "react";
-import ReactDOM from "react-dom/client";
+// main.jsx
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
 // Step 1. Import react-router functions
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./pages/Home";
+import "./index.css";
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<Home />);
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <Home />
+  </StrictMode>,
+)
 ```
 
 `createBrowserRouter` is used to create the router for our application. We'll
@@ -134,26 +141,29 @@ const router = createBrowserRouter([
     path: "/",
     element: <Home />
   }
-]);
+])
 ```
 
 The `RouterProvider` provides the router created by `createBrowserRouter` to our
 application, so it can use React-Router's client-side routing.
 
 ```jsx
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<RouterProvider router={router} />);
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <RouterProvider router={router} />
+  </StrictMode>,
+)
 ```
 
-Let's try it! Copy the code below into `src/index.js` and run `npm start` again
+Let's try it! Copy the code below into `src/main.jsx` and run `npm run dev` again
 if you've closed down your application at any point (don't forget to run `npm
 run server` if you closed down your `json-server` too). Once it is running,
 point your URL to `http://localhost:3000/`. We should still see the home page,
 but now it's being rendered using React Router!
 
 ```jsx
-import React from "react";
-import ReactDOM from "react-dom/client";
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./pages/Home";
 
@@ -162,10 +172,13 @@ const router = createBrowserRouter([
     path: "/",
     element: <Home />
   }
-]);
+])
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<RouterProvider router={router} />);
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <RouterProvider router={router} />
+  </StrictMode>,
+)
 ```
 
 ### Adding Additional Routes
@@ -178,7 +191,7 @@ Next, we want to set up routing for `About` and `Login` pages.
 First, we'll make two new components within our `pages` directory.
 
 ```jsx
-// About.js
+// About.jsx
 function About() {
   return (
     <>
@@ -189,14 +202,14 @@ function About() {
         <h1>This is my about component!</h1>
       </main>
     </>
-  );
-};
+  )
+}
 
-export default About;
+export default About
 ```
 
 ```jsx
-// Login.js
+// Login.jsx
 function Login() {
   return (
     <>
@@ -220,23 +233,23 @@ function Login() {
         </form>
       </main>
     </>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login
 ```
 
-Next, we'll import our new pages into our `index.js` file, and add them as
+Next, we'll import our new pages into our `main.jsx` file, and add them as
 routes within `createBrowserRouter`:
 
 ```jsx
-// ./src/index.js
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Home from "./pages/Home";
-import About from "./pages/About";
-import Login from "./pages/Login";
+// ./src/main.js
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import Home from "./pages/Home"
+import About from "./pages/About"
+import Login from "./pages/Login"
 
 const router = createBrowserRouter([
   {
@@ -253,8 +266,11 @@ const router = createBrowserRouter([
   }
 ])
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<RouterProvider router={router} />);
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <RouterProvider router={router} />
+  </StrictMode>,
+)
 ```
 
 If you go back to the browser you will see that it looks the same — our `Home`
@@ -293,7 +309,7 @@ our `/about` page when clicked:
 Let's create a new `NavBar` component in the `components` folder to add these
 `NavLink`s to our application.
 
-NavBar.js:
+NavBar.jsx:
 
 ```jsx
 import { NavLink } from "react-router-dom";
@@ -323,10 +339,10 @@ function NavBar() {
         Login
       </NavLink>
     </nav>
-  );
-};
+  )
+}
 
-export default NavBar;
+export default NavBar
 ```
 
 Let's also create a `NavBar.css` file adjacent to our `NavBar` file to add in
@@ -357,10 +373,10 @@ enable easy navigation between different pages in your application!
 Ex:
 
 ```jsx
-// Home.js
+// Home.jsx
 import { useState, useEffect } from "react"
-import UserCard from "../components/UserCard";
-import NavBar from "../components/NavBar";
+import UserCard from "../components/UserCard"
+import NavBar from "../components/NavBar"
 
 function Home() {
   const [users, setUsers] = useState([])
@@ -386,10 +402,10 @@ function Home() {
         {userList}
       </main>
     </>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home
 ```
 
 You'll also want to add `NavBar` to your `About` and `Login` components.
@@ -409,8 +425,8 @@ want to see our user profiles. Let's create a new file in `pages` called
 Here's a basic setup for that component:
 
 ```jsx
-// UserProfile.js
-import NavBar from "../components/NavBar";
+// UserProfile.jsx
+import NavBar from "../components/NavBar"
 
 function UserProfile() {
   return(
@@ -422,18 +438,18 @@ function UserProfile() {
         <h1>User Profile</h1>
       </main>
     </>
-  );
-};
+  )
+}
 
-export default UserProfile;
+export default UserProfile
 ```
 
 We can then add this new component to our router:
 
 ```jsx
-// index.js
+// main.jsx
 // ...other import statements
-import UserProfile from "./pages/UserProfile";
+import UserProfile from "./pages/UserProfile"
 
 const router = createBrowserRouter([
   {
@@ -452,7 +468,7 @@ const router = createBrowserRouter([
     path: "/profile",
     element: <UserProfile />
   }
-]);
+])
 
 // ...render statements
 ```
@@ -463,8 +479,8 @@ user cards displaying on our homepage.
 Let's update our `UserCard` component to use a `Link` from `react-router-dom`:
 
 ```jsx
-// UserCard.js
-import { Link } from "react-router-dom";
+// UserCard.jsx
+import { Link } from "react-router-dom"
 
 function UserCard({user}) {
   return (
@@ -472,10 +488,10 @@ function UserCard({user}) {
         <h2>{user.name}</h2>
         <Link to="/profile">View profile</Link>
     </article>
-  );
+  )
 }
 
-export default UserCard;
+export default UserCard
 ```
 
 Let's test it out! Click on one of those links — you should be navigated to our
@@ -494,7 +510,7 @@ Let's go back and update our routes to start using dynamic routing and URL
 parameters:
 
 ```jsx
-// index.js
+// main.jsx
 // ...import statements
 
 const router = createBrowserRouter([
@@ -514,7 +530,7 @@ const router = createBrowserRouter([
     path: "/profile/:id",
     element: <UserProfile />
   }
-]);
+])
 
 // ...render statements
 ```
@@ -533,7 +549,7 @@ Let's update our `UserCard` component to start making use of our dynamic route:
 
 ```jsx
 // UserCard.js
-import {Link} from "react-router-dom";
+import {Link} from "react-router-dom"
 
 function UserCard({user}) {
   return (
@@ -543,10 +559,10 @@ function UserCard({user}) {
           <Link to={`/profile/${user.id}`}>View profile</Link>
         </p>
     </article>
-  );
-};
+  )
+}
 
-export default UserCard;
+export default UserCard
 ```
 
 We've used string interpolation to update the `to` prop of our `Link` component
@@ -573,14 +589,14 @@ parameters we included in our URL route and save those parameters to a variable.
 Let's also add a console.log so we can take a look at our new params variable:
 
 ```jsx
-// UserProfile.js
+// UserProfile.jsx
 // ...other import statements
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react"
+import { useParams } from "react-router-dom"
 
 function UserProfile() {
-  const params = useParams();
-  console.log(params);
+  const params = useParams()
+  console.log(params)
 // ...remaining code
 ```
 
@@ -601,16 +617,16 @@ user into a `fetch` request URL and `fetch` that user's specific information
 from our backend:
 
 ```JavaScript
-const [user, setUser] = useState({});
-const params = useParams();
-const userId = params.id;
+const [user, setUser] = useState({})
+const params = useParams()
+const userId = params.id
 
 useEffect(() =>{
   fetch(`http://localhost:4000/users/${userId}`)
   .then(r => r.json())
   .then(data => setUser(data))
   .catch(error => console.error(error))
-}, [userId]);
+}, [userId])
 
 ```
 
@@ -632,26 +648,26 @@ if(!user.name){
 Here's what our full UserProfile component looks like now:
 
 ```jsx
-// UserProfile.js
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import NavBar from "../components/NavBar";
+// UserProfile.jsx
+import { useEffect, useState } from "react"
+import { useParams } from "react-router-dom"
+import NavBar from "../components/NavBar"
 
 function UserProfile() {
-  const [user, setUser] = useState({});
-  const params = useParams();
-  const userId = params.id;
+  const [user, setUser] = useState({})
+  const params = useParams()
+  const userId = params.id
 
   useEffect(() =>{
     fetch(`http://localhost:4000/users/${userId}`)
     .then(r => r.json())
     .then(data => setUser(data))
-    .catch(error => console.error(error));
-  }, [userId]);
+    .catch(error => console.error(error))
+  }, [userId])
 
   if(!user.name){
-    return <h1>Loading...</h1>;
-  };
+    return <h1>Loading...</h1>
+  }
 
   return(
     <>
@@ -662,10 +678,10 @@ function UserProfile() {
         <h1>{user.name}</h1>
       </main>
     </>
-  );
-};
+  )
+}
 
-export default UserProfile;
+export default UserProfile
 ```
 
 With our component updated, we should now see the correct user displaying when
@@ -684,12 +700,12 @@ Create this new component within our `pages` folder, then add the following
 code:
 
 ```jsx
-import NavBar from "../components/NavBar";
-import { useRouteError } from "react-router-dom";
+import NavBar from "../components/NavBar"
+import { useRouteError } from "react-router-dom"
 
 function ErrorPage() {
   const error = useRouteError();
-  console.error(error);
+  console.error(error)
 
   return (
     <>
@@ -700,10 +716,10 @@ function ErrorPage() {
         <h1>Whoops! Something went wrong!</h1>
       </main>
     </>
-  );
+  )
 }
 
-export default ErrorPage;
+export default ErrorPage
 ```
 
 Note that we're importing the `useRouteError` hook in addition to our `NavBar`
@@ -716,9 +732,9 @@ Now that we have that, we can add this `ErrorPage` to each of our routes using
 the `errorElement` field within our route objects:
 
 ```jsx
-// index.js
+// main.jsx
 // ... other import statements
-import ErrorPage from "./pages/ErrorPage";
+import ErrorPage from "./pages/ErrorPage"
 
 const router = createBrowserRouter([
   {
@@ -741,7 +757,7 @@ const router = createBrowserRouter([
     element: <UserProfile />,
     errorElement: <ErrorPage />
   }
-]);
+])
 
 // ...render statements
 
@@ -764,23 +780,23 @@ By this point, everything should be functional. (If it's not, try carefully
 reviewing any errors you're receiving and double checking your code against the
 example code.) But, we could make an _organizational_ improvement.
 
-Take a look at our `index.js` file. It's getting pretty long and messy! Instead
-of including all of this routing logic within our `index.js` file, let's extract
-some of it out into a separate file, `routes.js`. This file has already been
+Take a look at our `main.jsx` file. It's getting pretty long and messy! Instead
+of including all of this routing logic within our `main.jsx` file, let's extract
+some of it out into a separate file, `routes.jsx`. This file has already been
 created for you, but you can create it yourself in future projects.
 
-Let's move our array of route objects into this `routes.js` file, and save it in
+Let's move our array of route objects into this `routes.jx` file, and save it in
 a variable called `routes`. We can then make our `routes` variable the default
 export for the file. Don't forget to import all of the necessary components as
 well!
 
 ```jsx
-// routes.js
-import Home from "./pages/Home";
-import About from "./pages/About";
-import Login from "./pages/Login";
-import UserProfile from "./pages/UserProfile";
-import ErrorPage from "./pages/ErrorPage";
+// routes.jsx
+import Home from "./pages/Home"
+import About from "./pages/About"
+import Login from "./pages/Login"
+import UserProfile from "./pages/UserProfile"
+import ErrorPage from "./pages/ErrorPage"
 
 const routes = [
   {
@@ -803,26 +819,28 @@ const routes = [
     element: <UserProfile />,
     errorElement: <ErrorPage />
   }
-];
+]
 
-export default routes;
+export default routes
 ```
 
 Now we just need to make sure we import our `routes` variable back into our
-`index.js` file and pass it into `createBrowserRouter`:
+`main.js` file and pass it into `createBrowserRouter`:
 
 ```jsx
-// index.js
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import routes from "./routes.js";
+// main.jsx
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import routes from "./routes.js"
 
-const router = createBrowserRouter(routes);
+const router = createBrowserRouter(routes)
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<RouterProvider router={router} />);
-
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <RouterProvider router={router} />
+  </StrictMode>,
+)
 ```
 
 There! Much cleaner! This will also make it easier to run tests on your routes,
